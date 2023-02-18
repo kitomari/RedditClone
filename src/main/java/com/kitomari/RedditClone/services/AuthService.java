@@ -1,6 +1,7 @@
 package com.kitomari.RedditClone.services;
 
 import com.kitomari.RedditClone.dto.RegisterRequest;
+import com.kitomari.RedditClone.models.NotificationEmail;
 import com.kitomari.RedditClone.models.User;
 import com.kitomari.RedditClone.models.VerificationToken;
 import com.kitomari.RedditClone.repository.UserRepository;
@@ -20,6 +21,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
     private final VerificationTokenRepository verificationTokenRepository;
+    private final MailService mailService;
 
     @Transactional
     public void signup(RegisterRequest registerRequest){
@@ -34,6 +36,9 @@ public class AuthService {
 
         //Method to generate verification token
         String token = generateVerificationToken(user);
+        mailService.sendMail(new NotificationEmail("Please activate your account", user.getEmail(), "Welcome to Reddit, "+
+                "Please click below url to activate your account: "+
+                "http://localhost:8080/api/auth/accountVerification/"+token));
     }
 
     private String generateVerificationToken(User user){
