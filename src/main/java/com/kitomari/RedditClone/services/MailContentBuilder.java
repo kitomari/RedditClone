@@ -13,6 +13,6 @@ public class MailContentBuilder {
     String build(String message){
         Context context = new Context();
         context.setVariable("message",message);
-        return templateEngine.process("mailTrmplate",context);
+        return templateEngine.process("mailTemplate",context);
     }
 }

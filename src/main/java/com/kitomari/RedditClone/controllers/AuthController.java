@@ -1,5 +1,6 @@
 package com.kitomari.RedditClone.controllers;
 
+import com.kitomari.RedditClone.dto.LoginRequest;
 import com.kitomari.RedditClone.dto.RegisterRequest;
 import com.kitomari.RedditClone.services.AuthService;
 import lombok.AllArgsConstructor;
@@ -17,8 +18,13 @@ public class AuthController {
 
     private final AuthService authService;
     @PostMapping("/signup")
-    public ResponseEntity<String> signup(@RequestBody RegisterRequest registerRequest){
-        authService.signup(registerRequest);
+    public ResponseEntity<String> signUp(@RequestBody RegisterRequest registerRequest){
+        authService.signUp(registerRequest);
         return new ResponseEntity<>("User registration successfully", HttpStatus.OK);
+    }
+
+    @PostMapping("/login")
+    public void login(@RequestBody LoginRequest loginRequest){
+        authService.login(loginRequest);
     }
 }

@@ -1,5 +1,6 @@
 package com.kitomari.RedditClone.services;
 
+import com.kitomari.RedditClone.dto.LoginRequest;
 import com.kitomari.RedditClone.dto.RegisterRequest;
 import com.kitomari.RedditClone.models.NotificationEmail;
 import com.kitomari.RedditClone.models.User;
@@ -8,6 +9,8 @@ import com.kitomari.RedditClone.repository.UserRepository;
 import com.kitomari.RedditClone.repository.VerificationTokenRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,9 +25,10 @@ public class AuthService {
     private final UserRepository userRepository;
     private final VerificationTokenRepository verificationTokenRepository;
     private final MailService mailService;
+    private final AuthenticationManager authenticationManager;
 
     @Transactional
-    public void signup(RegisterRequest registerRequest){
+    public void signUp(RegisterRequest registerRequest){
         User user = new User();
         user.setUsername(registerRequest.getUsername());
         user.setEmail(registerRequest.getEmail());
@@ -36,7 +40,7 @@ public class AuthService {
 
         //Method to generate verification token
         String token = generateVerificationToken(user);
-        mailService.sendMail(new NotificationEmail("Please activate your account", user.getEmail(), "Welcome to Reddit, "+
+        mailService.sendMail(new NotificationEmail("Please activate your account",user.getEmail(), "Welcome to Reddit, "+
                 "Please click below url to activate your account: "+
                 "http://localhost:8080/api/auth/accountVerification/"+token));
     }
@@ -49,5 +53,9 @@ public class AuthService {
 
         verificationTokenRepository.save(verificationToken);
         return token;
+    }
+
+    public void login(LoginRequest loginRequest) {
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
     }
 }
